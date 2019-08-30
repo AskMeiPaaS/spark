@@ -1,2 +1,2 @@
 # spark
-Spark musings
+Scala - Spark musings
