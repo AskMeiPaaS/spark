@@ -1,54 +1,91 @@
-package lectures
+package com.askmeipaas.scalabasics
 
 object Generics extends App {
 
-  class MyList[+A] { // you can put anything in place of A - Trait can also be parameterized
-    //use the type A
-    def add[B >: A] (element: B): MyList[B] = ???
-    /*
-    * A = Cat
-    * B = Dog --> Animal i.e. B = Animal
-     */
+  //Generics provides a compile time safety
+
+  val arrInt: Array[Int] = Array(1, 2, 3, 4, 5)
+
+  //val arrT: Array[T] = Array(1,2,3,4,5, "Say")
+
+  trait Animal
+
+  trait Person
+
+  case class Dog() extends Animal
+
+  case class Cat() extends Animal
+
+  case class Alpha() extends Person
+
+  val docA = new Doctor[Animal]
+  docA.checkHealth(Dog())
+  docA.checkHealth(Cat())
+
+  val docP = new Doctor[Person]
+  docP.checkHealth(Alpha())
+
+  class Doctor[A] {
+    //Method is inside the class
+    def checkHealth(thing: A) = {
+      //var x = this.toString()
+      println(s"Health of $thing is good!")
+    }
+
+    def checkPulse[T, X](a: T): Any = {
+
+    }
   }
 
-  val listOfIntegers = new MyList[Int]
-  val listOfStrings = new MyList[String]
+  //Maps
 
-  //generic methods
-  object MyList {
-    def empty[A]: MyList[A] = ???
+  val myMap = Map[String, String]("UK" -> "United Kingdom", "USA" -> "United States of America")
+
+  /*
+  Variance Types
+  1. Invariant A
+  2. Covariant +A
+  3. Contravariant -A
+   */
+  class InvariantList[A] {
+
   }
 
-  val emptyListOfIntegers = MyList.empty[Int]
+  // Standalone Function i.e. Outside a class with type
+  def checkHeart(list: InvariantList[Animal]): Unit = {
+    println("Check my heart..")
+  }
 
-  //variance problem
-  class Animal
-  class Dog extends Animal
-  class Cat extends Animal
+  checkHeart(new InvariantList[Animal]())
 
-  //COVARIANCE: List[Cat] extends List[Animal]
-  class CovarianceList[+A]
-  val animal:Animal = new Cat
-  val animalList: CovarianceList[Animal] = new CovarianceList[Cat]
-  // animalList.add(new Dog) - valid  - but it will pollute the object
+  //checkHeart(new InvariantList[Dog]()) //Type Mismatch
 
-  //INVARIANCE
-  class InvariantList[A]
-  val invariantAnimalList: InvariantList[Animal] = new InvariantList[Animal] //you can't out extended types
+  class CovariantList[+A] {
 
-  //CONTRAVARIANCE
-  class ContravariantList[-A]
-  val contravariantList: ContravariantList[Animal] = new ContravariantList[Animal] //poor choice
+  }
 
-  class Trainer[-A]
-  val trainer: Trainer[Cat] = new Trainer[Animal]
+  // Standalone Function i.e. Outside a class with type
+  def checkVital(list: CovariantList[Animal]): Unit = {
+    println("Check my heart..")
+  }
 
-//Bounded Types
-class Cage [A <: Animal] (animal :A)
-  val cage = new Cage (new Dog)
+  checkVital(new CovariantList[Animal]())
+  checkVital(new CovariantList[Dog]())
+  checkVital(new CovariantList[Cat]())
 
-  class Car
-  //val newCage = new Cage (new Car) // ERROR
+  //checkVital(new CovariantList[Person]()) //Type Mismatch
+
+  class ContravariantList[-A] {
+
+  }
+
+  // Standalone Function i.e. Outside a class with type
+  def checkVision(list: ContravariantList[Dog]): Unit = {
+    println("Check my heart..")
+  }
+
+  checkVision(new ContravariantList[Animal]())
+  checkVision(new ContravariantList[Dog]())
+  //checkVision(new ContravariantList[Cat]()) //Type Mismatch
 
 }
-
